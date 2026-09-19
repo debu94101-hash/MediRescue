@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MediRescue Driver | Emergency Response</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--blue:#1288e8;--blue2:#0b63c9;--navy:#10233f;--red:#e9384f;--green:#18a874;--ink:#17263c;--muted:#718096;--line:#e6edf5;--bg:#f4f8fc;--white:#fff;--shadow:0 18px 50px rgba(16,35,63,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink)}button,input{font:inherit}button{cursor:pointer;border:0}.topline{height:34px;background:#f8fbff;border-bottom:1px solid #e9f0f7;color:#718096;font-size:12px;display:flex;align-items:center;justify-content:center}.topline span{margin:0 14px}.header{height:76px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,78px);border-bottom:1px solid #edf2f7;position:sticky;top:0;z-index:1000}.brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:21px;color:#12243d}.brandIcon{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#1599f3,#0c68d0);display:grid;place-items:center;color:#fff;font-size:21px;box-shadow:0 8px 20px rgba(18,136,232,.25)}.brand small{display:block;font-size:10px;letter-spacing:1.4px;color:#8b9aad;margin-top:2px;font-weight:700}.nav{display:flex;align-items:center;gap:30px}.nav a{text-decoration:none;color:#596b81;font-size:13px;font-weight:600}.nav a:hover{color:var(--blue)}.headerActions{display:flex;align-items:center;gap:10px}.btn{border-radius:10px;padding:11px 17px;font-weight:700;font-size:13px}.btnGhost{background:#f0f6fc;color:#176ebd}.btnPrimary{background:linear-gradient(135deg,#1599f3,#0b70d4);color:#fff;box-shadow:0 8px 18px rgba(18,136,232,.20)}.hero{max-width:1220px;margin:0 auto;padding:58px 24px 38px;display:grid;grid-template-columns:1.15fr .85fr;gap:42px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;background:#e9f5ff;color:#1376c9;border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}.pulse{width:8px;height:8px;border-radius:50%;background:#1ab67c;box-shadow:0 0 0 5px rgba(26,182,124,.12)}h1{font-size:clamp(38px,5vw,61px);line-height:1.02;letter-spacing:-2.6px;margin:20px 0 16px;color:#12243d}h1 span{color:var(--blue)}.hero p{max-width:610px;color:#718096;font-size:16px;line-height:1.75;margin:0 0 25px}.heroButtons{display:flex;gap:12px;flex-wrap:wrap}.heroVisual{min-height:330px;border-radius:28px;background:linear-gradient(145deg,#dff2ff,#edf7ff);position:relative;overflow:hidden;box-shadow:var(--shadow);border:1px solid #dcecf9}.routeLine{position:absolute;left:16%;right:13%;top:54%;height:3px;background:#8fcaf4;transform:rotate(-17deg);transform-origin:center}.routeLine:after{content:"";position:absolute;right:0;top:-5px;width:13px;height:13px;border-radius:50%;background:var(--red);box-shadow:0 0 0 7px rgba(233,56,79,.12)}.ambulanceArt{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);font-size:104px;filter:drop-shadow(0 20px 20px rgba(18,72,120,.16))}.floatCard{position:absolute;background:#fff;border:1px solid #e4edf6;border-radius:15px;padding:13px 15px;box-shadow:0 14px 35px rgba(29,73,110,.12);font-size:12px}.floatCard strong{display:block;font-size:14px;color:var(--ink);margin-bottom:3px}.fc1{top:22px;left:22px}.fc2{right:20px;bottom:22px}.stats{max-width:1220px;margin:0 auto;padding:0 24px 34px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 8px 28px rgba(16,35,63,.05);display:flex;align-items:center;gap:15px}.statIcon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:#edf7ff;color:var(--blue);font-size:21px}.stat .label{font-size:11px;color:#8a98a9;text-transform:uppercase;letter-spacing:.7px;font-weight:700}.stat .value{font-size:18px;font-weight:800;margin-top:3px}.dashboard{max-width:1220px;margin:0 auto;padding:0 24px 70px}.sectionHead{display:flex;justify-content:space-between;align-items:end;margin:18px 0 16px}.sectionHead h2{margin:0;font-size:25px;letter-spacing:-.7px}.sectionHead p{margin:5px 0 0;color:var(--muted);font-size:13px}.controlCard{background:#fff;border:1px solid var(--line);border-radius:20px;padding:21px;box-shadow:0 10px 32px rgba(16,35,63,.06);margin-bottom:22px}.controlTop{display:flex;justify-content:space-between;gap:20px;align-items:center}.controlTitle{display:flex;align-items:center;gap:12px}.driverAvatar{width:48px;height:48px;border-radius:15px;background:#eef7ff;color:#1178cb;display:grid;place-items:center;font-size:23px}.controlTitle h3{margin:0;font-size:16px}.controlTitle p{margin:5px 0 0;color:var(--muted);font-size:12px}.statusBtns{display:flex;gap:9px}.statusBtns button{padding:10px 15px;border-radius:10px;font-weight:800;font-size:12px}.available{background:#eafaf4;color:#12835d}.offline{background:#f0f3f7;color:#5e6c7e}.dispatchLayout{display:grid;grid-template-columns:.9fr 1.1fr;gap:20px;align-items:stretch}.panelCard{background:#fff;border:1px solid var(--line);border-radius:20px;box-shadow:0 10px 32px rgba(16,35,63,.06);overflow:hidden}.panelHead{padding:19px 21px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.panelHead h3{margin:0;font-size:15px}.panelHead span{font-size:11px;color:#7d8da0;background:#f3f7fb;padding:7px 10px;border-radius:999px;font-weight:700}.list{padding:15px;min-height:270px}.list .card{background:#fbfdff!important;border:1px solid #e4edf6!important;border-radius:16px!important;padding:18px!important;margin:0 0 12px!important;box-shadow:none!important}.list .card:last-child{margin-bottom:0!important}.list .card h2{font-size:18px;margin:8px 0}.list .card p{font-size:12px;color:#718096;line-height:1.6}.list .tag{display:inline-block;background:#fff0f2;color:#d62e46;padding:6px 9px;border-radius:7px;font-size:10px;font-weight:800;letter-spacing:.4px}.list .card button{background:linear-gradient(135deg,#1599f3,#0b70d4);color:#fff;border-radius:9px;padding:11px 14px;font-size:11px;font-weight:800}.mapWrap{min-height:520px}.map{height:100%;min-height:520px}.empty{padding:60px 20px;text-align:center;color:#8795a7;font-size:13px}.emptyIcon{font-size:38px;opacity:.65;margin-bottom:10px}.modal{position:fixed;inset:0;background:rgba(9,25,45,.55);backdrop-filter:blur(8px);z-index:2000;display:grid;place-items:center;padding:20px}.hidden{display:none!important}.panel{width:min(470px,100%);background:#fff;border-radius:24px;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.22);position:relative}.panel h2{margin:0 0 20px;font-size:24px}.x{position:absolute;right:16px;top:14px;background:#f2f5f8;width:34px;height:34px;border-radius:10px;font-size:21px;color:#526174}.authFields{display:grid;gap:11px}.authFields input{width:100%;border:1px solid #dfe7ef;background:#fbfdff;border-radius:10px;padding:12px 13px;outline:none}.authFields input:focus{border-color:#72baf0;box-shadow:0 0 0 3px #e9f5ff}.wide{width:100%;margin-top:14px;background:linear-gradient(135deg,#1599f3,#0b70d4);color:#fff;padding:13px;border-radius:10px;font-weight:800}.muted{color:#8492a4;font-size:12px;line-height:1.55}.footer{background:#10233f;color:#b9c7d7;padding:28px 24px;text-align:center;font-size:12px}.footer strong{color:#fff}
+@media(max-width:900px){.nav{display:none}.hero{grid-template-columns:1fr;padding-top:38px}.heroVisual{min-height:290px}.dispatchLayout{grid-template-columns:1fr}.mapWrap,.map{min-height:430px}.stats{grid-template-columns:1fr}.controlTop{align-items:flex-start;flex-direction:column}.statusBtns{width:100%}.statusBtns button{flex:1}}
+@media(max-width:560px){.topline{display:none}.header{height:68px;padding:0 15px}.headerActions .btnGhost{display:none}.brandIcon{width:38px;height:38px}.brand{font-size:18px}.hero{padding:34px 17px 25px}.dashboard,.stats{padding-left:17px;padding-right:17px}.hero p{font-size:14px}.ambulanceArt{font-size:78px}.floatCard{font-size:10px}.fc2{right:12px}.sectionHead{display:block}.sectionHead h2{font-size:21px}.controlCard{padding:16px}.statusBtns button{font-size:10px;padding:10px 8px}.panel{padding:22px}.mapWrap,.map{min-height:370px}}
+</style>
+</head>
+<body>
+<div class="topline"><span>24/7 Emergency Response Network</span><span>•</span><span>Real-time ambulance tracking</span><span>•</span><span>Secure dispatch operations</span></div>
+<header class="header">
+  <div class="brand"><div class="brandIcon">🚑</div><div>MediRescue<small>EMERGENCY RESPONSE</small></div></div>
+  <nav class="nav"><a href="#overview">Overview</a><a href="#dispatch">Dispatch</a><a href="#mapSection">Live Map</a></nav>
+  <div class="headerActions"><button class="btn btnGhost" onclick="openAuth('register')">Register Driver</button><button id="logoutBtn" class="btn btnPrimary" onclick="logout()" style="display:none">Logout</button><button class="btn btnPrimary" onclick="openAuth('login')">Driver Login</button></div>
+</header>
+
+<section class="hero" id="overview">
+  <div>
+    <div class="eyebrow"><span class="pulse"></span> Driver Command Center</div>
+    <h1>Move faster.<br><span>Save lives.</span></h1>
+    <p>MediRescue connects verified ambulance drivers with hospital-approved emergency requests, while continuously sharing your live GPS position with the response network.</p>
+    <div class="heroButtons"><button class="btn btnPrimary" onclick="document.getElementById('dispatch').scrollIntoView({behavior:'smooth'})">🚨 View Dispatches</button><button class="btn btnGhost" onclick="document.getElementById('mapSection').scrollIntoView({behavior:'smooth'})">📍 Open Live Map</button></div>
+  </div>
+  <div class="heroVisual">
+    <div class="floatCard fc1"><strong>LIVE GPS</strong><span>Location sharing ready</span></div>
+    <div class="ambulanceArt">🚑</div><div class="routeLine"></div>
+    <div class="floatCard fc2"><strong>Response route</strong><span>Patient → Hospital</span></div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><div class="statIcon">🛰️</div><div><div class="label">GPS tracking</div><div class="value">Live position</div></div></div>
+  <div class="stat"><div class="statIcon">🚨</div><div><div class="label">Dispatch status</div><div class="value">Ready for response</div></div></div>
+  <div class="stat"><div class="statIcon">🏥</div><div><div class="label">Network</div><div class="value">Hospital connected</div></div></div>
+</section>
+
+<main class="dashboard">
+  <section class="controlCard">
+    <div class="controlTop">
+      <div class="controlTitle"><div class="driverAvatar">👨‍⚕️</div><div><h3>Ambulance Control</h3><p id="driverInfo">Login to start receiving dispatches.</p></div></div>
+      <div class="statusBtns"><button class="available" onclick="setStatus('AVAILABLE')">● AVAILABLE</button><button class="offline" onclick="setStatus('OFFLINE')">OFFLINE</button></div>
+    </div>
+  </section>
+
+  <section id="dispatch">
+    <div class="sectionHead"><div><h2>Emergency Dispatch</h2><p>Hospital-accepted requests waiting for ambulance response.</p></div></div>
+    <div class="dispatchLayout">
+      <div class="panelCard"><div class="panelHead"><h3>🚨 Active Requests</h3><span>LIVE</span></div><div id="list" class="list"><div class="empty"><div class="emptyIcon">🚑</div>Login to receive hospital-approved dispatches.</div></div></div>
+      <div class="panelCard mapWrap" id="mapSection"><div class="panelHead"><h3>📍 Response Map</h3><span>REAL-TIME</span></div><div id="map" class="map"></div></div>
+    </div>
+  </section>
+</main>
+
+<div id="auth" class="modal hidden"><div class="panel"><button type="button" class="x" onclick="closeAuth()" aria-label="Close">×</button><h2 id="authTitle">Driver Login</h2><div id="authFields" class="authFields"></div><button class="wide" onclick="submitAuth()">Continue</button></div></div>
+<footer class="footer"><strong>MediRescue</strong> • Emergency ambulance coordination and real-time response platform</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ url_for('static', filename='driver.js') }}"></script>
+</body></html>

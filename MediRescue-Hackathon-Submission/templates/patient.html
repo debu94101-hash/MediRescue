@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MediRescue | Emergency Medical Response</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--blue:#1479f5;--blue2:#0b5ed7;--navy:#10233f;--ink:#162033;--muted:#66758a;--red:#ef3340;--red2:#c91828;--bg:#f4f8fc;--line:#e5edf6;--green:#16a36a;--shadow:0 18px 55px rgba(24,62,105,.12)}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}.container{width:min(1180px,calc(100% - 40px));margin:auto}
+.topbar{height:38px;background:#f7fbff;border-bottom:1px solid #e7eff7;color:#74839a;font-size:12px}.topbar .container{height:100%;display:flex;align-items:center;justify-content:space-between}.toplinks{display:flex;gap:20px}.toplinks span{display:flex;gap:7px;align-items:center}
+header{height:78px;background:#fff;position:sticky;top:0;z-index:900;border-bottom:1px solid #edf2f7}.nav{height:100%;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}.brand-icon{width:43px;height:43px;border-radius:13px;background:linear-gradient(145deg,#1594ff,#0864d9);display:grid;place-items:center;color:#fff;font-size:23px;box-shadow:0 8px 22px rgba(20,121,245,.25)}.brand-name{font-family:Manrope;font-size:21px;font-weight:800;letter-spacing:-.6px}.brand-name em{color:var(--blue);font-style:normal}.navlinks{display:flex;align-items:center;gap:28px}.navlinks a{text-decoration:none;color:#56667b;font-size:13px;font-weight:600}.navlinks a:hover{color:var(--blue)}.nav-actions{display:flex;align-items:center;gap:10px}.user-pill{display:none;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:#f8fbff;font-size:12px;font-weight:700}.btn{border:0;border-radius:10px;padding:11px 17px;font:700 13px Inter;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-1px)}.btn-blue{background:var(--blue);color:#fff;box-shadow:0 8px 20px rgba(20,121,245,.2)}.btn-ghost{background:#fff;border:1px solid #dce7f2;color:#41516a}.btn-red{background:var(--red);color:#fff}.mobile-menu{display:none}
+.hero-wrap{padding:30px 0 0}.hero{min-height:485px;border-radius:24px;overflow:hidden;background:linear-gradient(105deg,#eaf5ff 0%,#dceeff 54%,#c8e5ff 100%);display:grid;grid-template-columns:51% 49%;box-shadow:var(--shadow);position:relative}.hero-copy{padding:62px 48px 50px 58px;position:relative;z-index:2}.eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.72);border:1px solid rgba(255,255,255,.9);padding:7px 11px;border-radius:30px;color:#1769c8;font-size:11px;font-weight:800;letter-spacing:.5px;text-transform:uppercase}.pulse-dot{width:7px;height:7px;background:#18b875;border-radius:50%;box-shadow:0 0 0 5px rgba(24,184,117,.12)}h1{font-family:Manrope;font-size:50px;line-height:1.06;letter-spacing:-2.2px;color:#14213a;margin:20px 0 16px}.hero-copy>p{font-size:15px;line-height:1.75;color:#607188;max-width:510px}.hero-actions{display:flex;gap:12px;margin-top:27px;flex-wrap:wrap}.hero-actions .btn{padding:13px 20px}.hero-note{display:flex;gap:9px;align-items:center;margin-top:22px;font-size:11px;color:#728197}.hero-visual{position:relative;min-height:485px;overflow:hidden}.orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.32)}.orb.one{width:390px;height:390px;right:-90px;top:28px}.orb.two{width:210px;height:210px;left:60px;bottom:-110px;background:rgba(255,255,255,.25)}.doctor-card{position:absolute;right:50px;top:38px;width:360px;height:390px;background:linear-gradient(180deg,rgba(255,255,255,.82),rgba(255,255,255,.22));border-radius:50% 50% 16px 16px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}.doctor-svg{width:330px;height:365px}.floating{position:absolute;background:rgba(255,255,255,.95);border:1px solid rgba(255,255,255,.9);border-radius:14px;padding:12px 14px;box-shadow:0 15px 35px rgba(32,79,127,.15);font-size:11px}.floating strong{display:block;font-size:12px;margin-bottom:2px}.live-card{right:18px;top:92px}.live-card strong{color:#17875d}.gps-card{left:15px;bottom:65px}.gps-icon{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:9px;background:#e8f3ff;color:var(--blue);margin-right:7px}.floating-row{display:flex;align-items:center}.stats{display:grid;grid-template-columns:repeat(3,1fr);margin-top:0}.stat{min-height:145px;padding:28px 30px;background:#fff;border-right:1px solid #e5edf6;display:flex;gap:16px;align-items:flex-start}.stat:last-child{border:0}.stat:nth-child(2){background:#f8fbff}.stat-icon{width:44px;height:44px;border-radius:12px;background:#eaf4ff;color:var(--blue);display:grid;place-items:center;font-size:21px;flex:0 0 auto}.stat h3{font-size:15px;margin:2px 0 5px}.stat p{font-size:11px;color:var(--muted);line-height:1.55}
+.section{padding:48px 0}.section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:20px}.section-kicker{color:var(--blue);font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase}.section h2{font-family:Manrope;font-size:28px;letter-spacing:-1px;margin-top:5px}.section-head p{font-size:12px;color:var(--muted)}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{background:#fff;border:1px solid #e7eef6;border-radius:18px;padding:23px;box-shadow:0 8px 25px rgba(30,69,110,.05)}.feature-icon{width:44px;height:44px;border-radius:12px;background:#edf6ff;display:grid;place-items:center;font-size:21px;margin-bottom:15px}.feature h3{font-size:15px;margin-bottom:7px}.feature p{font-size:12px;color:var(--muted);line-height:1.65}
+.emergency-panel{display:none;margin-top:20px;background:#fff;border:1px solid #dfe9f4;border-radius:20px;padding:22px;box-shadow:var(--shadow)}.emergency-panel.show{display:block}.emergency-head{display:flex;align-items:center;justify-content:space-between;gap:15px}.status-chip{font-size:10px;font-weight:800;padding:7px 10px;border-radius:20px;background:#fff2f2;color:var(--red)}.emergency-title{font-family:Manrope;font-size:19px}.status-text{font-size:12px;color:var(--muted);margin-top:5px}.timer-area{display:none;margin-top:18px;background:#fff7f7;border:1px solid #ffd7da;border-radius:15px;padding:18px;text-align:center}.timer{font-family:Manrope;font-size:52px;color:var(--red);line-height:1;margin-bottom:6px}.cancel{margin-top:12px;background:#27354a;color:#fff;width:100%;max-width:280px}.tracking{margin-top:15px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.track-item{background:#f7fbff;border:1px solid #e4edf6;border-radius:12px;padding:12px;font-size:11px}.track-item b{display:block;color:#25364e;margin-bottom:3px}.map{height:300px;border-radius:15px;margin-top:15px;overflow:hidden;border:1px solid #dfe9f4}.eta{display:none;margin-top:10px;background:#eef8f4;color:#11704e;padding:12px;border-radius:11px;font-size:12px}.eta.show{display:block}.timelineBox{margin-top:12px;display:grid;gap:7px}.timeline-item{display:flex;gap:10px;align-items:flex-start;background:#f8fbff;border:1px solid #e4edf6;border-radius:10px;padding:10px;font-size:11px}.timeline-item .dot{font-size:14px}.priority{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:#fff2f2;color:#c92839;font-size:9px;font-weight:800}
+.location-card{margin-top:22px;background:#fff;border:1px solid #dfe9f4;border-radius:20px;padding:20px;box-shadow:0 8px 30px rgba(30,69,110,.06)}.location-top{display:flex;align-items:center;justify-content:space-between;gap:15px}.loc-title{font-size:15px;font-weight:800}.loc-sub{font-size:11px;color:var(--muted);margin-top:2px}.loc-status{display:flex;align-items:center;gap:8px;margin-top:15px;padding:12px;border-radius:12px;background:#f6faff;border:1px solid #e3edf7;font-size:12px;color:#52647a}.loc-status.good{background:#effbf6;border-color:#ccefe0;color:#147b57}.loc-status.bad{background:#fff5f5;border-color:#ffd9dc;color:#a51f2a}.accuracy{margin-left:auto;font-weight:800}.coords{font-family:ui-monospace,monospace;font-size:11px;color:#53677f;margin-top:7px}.detect{min-width:155px}.detect.loading{opacity:.7;pointer-events:none}
+.modal{display:none;position:fixed;inset:0;background:rgba(10,25,45,.62);backdrop-filter:blur(8px);z-index:2000;align-items:center;justify-content:center;padding:18px}.modal.show{display:flex}.modal-box{width:min(450px,100%);max-height:90vh;overflow:auto;background:#fff;border-radius:22px;padding:25px;box-shadow:0 30px 80px rgba(0,0,0,.22)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.modal-head h2{font-family:Manrope;font-size:21px}.close{border:0;background:#f3f6fa;width:34px;height:34px;border-radius:10px;font-size:20px;cursor:pointer;color:#5e6d80}.tabs{display:grid;grid-template-columns:1fr 1fr;background:#f3f6fa;padding:4px;border-radius:12px;margin-bottom:17px}.tab{border:0;background:transparent;padding:10px;border-radius:9px;font:700 12px Inter;color:#738196;cursor:pointer}.tab.active{background:#fff;color:var(--blue);box-shadow:0 3px 10px rgba(30,70,110,.08)}.form{display:none}.form.active{display:block}.field{margin-top:11px}.field label{display:block;font-size:11px;font-weight:800;color:#45566e;margin-bottom:5px}.field input{width:100%;padding:11px 12px;border:1px solid #d8e2ec;border-radius:10px;outline:none;font:500 13px Inter}.field input:focus{border-color:#74b2fa;box-shadow:0 0 0 3px #e9f4ff}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.submit{width:100%;margin-top:18px}.message{display:none;margin-top:10px;padding:10px;border-radius:9px;font-size:11px}.message.show{display:block}.message.error{background:#fff1f2;color:#a61b28}.message.success{background:#effaf5;color:#11734e}
+footer{background:#10233f;color:#dbe7f4;padding:30px 0;margin-top:10px}.footer{display:flex;justify-content:space-between;gap:20px;align-items:center}.footer-brand{font-family:Manrope;font-weight:800}.footer p{font-size:11px;color:#91a5bd}.secure{font-size:11px;color:#a9bdd4}
+@media(max-width:900px){.navlinks{display:none}.mobile-menu{display:block}.hero{grid-template-columns:1fr}.hero-copy{padding:42px 30px 30px}.hero-visual{min-height:330px}.doctor-card{right:50%;transform:translateX(50%);top:10px;width:300px;height:300px}.doctor-svg{width:270px;height:300px}.live-card{right:12px;top:55px}.gps-card{left:12px;bottom:28px}h1{font-size:42px}.stats{grid-template-columns:1fr}.stat{border-right:0;border-bottom:1px solid #e5edf6;min-height:105px}.feature-grid{grid-template-columns:1fr 1fr}.tracking{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.container{width:min(100% - 24px,1180px)}.topbar{display:none}header{height:68px}.brand-icon{width:38px;height:38px}.brand-name{font-size:18px}.nav-actions .btn-blue{display:none}.user-pill{display:none!important} .hero-wrap{padding-top:12px}.hero{border-radius:18px}.hero-copy{padding:30px 22px 25px}h1{font-size:35px;letter-spacing:-1.5px}.hero-copy>p{font-size:13px}.hero-actions{flex-direction:column}.hero-actions .btn{width:100%}.hero-visual{min-height:290px}.doctor-card{width:260px;height:270px}.doctor-svg{width:235px;height:260px}.live-card{right:7px;top:45px}.gps-card{left:7px;bottom:20px}.stats .stat{padding:22px}.section{padding:34px 0}.section h2{font-size:23px}.section-head{display:block}.section-head p{margin-top:7px}.feature-grid{grid-template-columns:1fr}.location-top{align-items:flex-start;flex-direction:column}.detect{width:100%}.tracking{grid-template-columns:1fr}.map{height:260px}.form-grid{grid-template-columns:1fr}.footer{flex-direction:column;align-items:flex-start}}
+
+.bystander-note{max-width:720px;margin:14px auto 0;padding:12px 16px;border:1px solid #dce8f5;background:#fff;border-radius:14px;color:#53657b;font-size:13px;text-align:center}.bystander-note b{color:#10233f}.hero-actions #sos{min-width:210px;font-weight:900;letter-spacing:.2px}.emergency-title{font-weight:900}.status-chip{font-weight:900}
+@media(max-width:700px){.hero-actions{display:grid;gap:10px}.hero-actions #sos{width:100%}.bystander-note{font-size:12px}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="container"><div class="toplinks"><span>✦ Real-time emergency coordination</span><span>✓ Verified hospital network</span></div><div>Available 24 / 7</div></div></div>
+<header><div class="container nav">
+<a class="brand" href="#home"><span class="brand-icon">✚</span><span class="brand-name">Medi<em>Rescue</em></span></a>
+<nav class="navlinks"><a href="#home">Home</a><a href="#services">Services</a><a href="#location">My Location</a><a href="#tracking-section">Emergency Tracking</a></nav>
+<div class="nav-actions"><button id="langToggle" class="btn btn-ghost" type="button" onclick="toggleLanguage()">हिन्दी</button><span id="userName" class="user-pill"></span><button id="loginBtn" class="btn btn-ghost" onclick="openAuth()">Login / Sign up</button><button id="logoutBtn" class="btn btn-ghost" onclick="logout()" style="display:none">Logout</button><button class="mobile-menu btn btn-ghost">☰</button></div>
+</div></header>
+<main id="home">
+<div class="container hero-wrap"><section class="hero">
+<div class="hero-copy"><span class="eyebrow"><i class="pulse-dot"></i> Smart emergency response</span><h1>Medical help.<br><span style="color:var(--blue)">When every second matters.</span></h1><p>MediRescue connects you with nearby verified hospitals and ambulance drivers using your live GPS location — helping emergency response start faster.</p>
+<div class="hero-actions"><button id="sos" class="btn btn-red" style="font-size:15px;padding:15px 25px" onclick="startSOS()">🚨 SEND SOS</button><button class="btn btn-blue detect" onclick="detectLocation()">📍 Detect My Location</button></div><div class="hero-note"><b>One-tap emergency response.</b> No form. No account required. Your GPS location is captured automatically.</div>
+<div class="bystander-note">👥 <b>Bystander Mode:</b> If someone else needs help, you can send SOS from this screen on their behalf.</div></div>
+<div class="hero-visual"><div class="orb one"></div><div class="orb two"></div><div class="doctor-card"><svg class="doctor-svg" viewBox="0 0 330 365" xmlns="http://www.w3.org/2000/svg"><circle cx="165" cy="85" r="54" fill="#f2c7ad"/><path d="M111 82c4-50 102-67 112 4-22-17-70-20-112-4Z" fill="#52657b"/><rect x="133" y="126" width="64" height="30" rx="15" fill="#f2c7ad"/><path d="M79 348c3-113 22-174 86-183 64 9 83 70 86 183Z" fill="#fff"/><path d="M86 348c5-95 20-145 67-166l12 45 12-45c47 21 62 71 67 166Z" fill="#eaf4fc"/><path d="M105 190c18-14 38-22 60-25 22 3 42 11 60 25l-21 158h-78Z" fill="#fff"/><path d="M165 185v125" stroke="#d8e6f2" stroke-width="5"/><path d="M154 219h22v22h-22z" fill="#1479f5"/><path d="M165 214v32M160 219h32" stroke="#1479f5" stroke-width="5"/><path d="M101 211c-23 14-35 43-39 78M229 211c23 14 35 43 39 78" fill="none" stroke="#f2c7ad" stroke-width="15" stroke-linecap="round"/><circle cx="61" cy="292" r="10" fill="#1479f5"/><path d="M61 292h-4v-14h8v14z" fill="#fff"/></svg></div><div class="floating live-card"><div class="floating-row"><span class="gps-icon">✓</span><div><strong>Emergency network online</strong><span style="color:#74839a">Verified response partners</span></div></div></div><div class="floating gps-card"><div class="floating-row"><span class="gps-icon">⌖</span><div><strong>Live GPS enabled</strong><span style="color:#74839a">Location-based dispatch</span></div></div></div></div>
+</section>
+<div class="stats"><div class="stat"><div class="stat-icon">🏥</div><div><h3>Verified Hospitals</h3><p>Emergency requests are broadcast to eligible nearby hospitals.</p></div></div><div class="stat"><div class="stat-icon">🚑</div><div><h3>Ambulance Dispatch</h3><p>Accepted emergencies can be assigned to an ambulance driver.</p></div></div><div class="stat"><div class="stat-icon">📍</div><div><h3>Live Location</h3><p>Use accurate GPS coordinates for faster emergency coordination.</p></div></div></div>
+</div>
+
+<section id="location" class="section"><div class="container"><div class="section-head"><div><div class="section-kicker">Location intelligence</div><h2>Your current location</h2></div><p>Detect and verify GPS before sending an emergency request.</p></div>
+<div class="location-card"><div class="location-top"><div><div class="loc-title">📍 GPS readiness</div><div class="loc-sub">Browser location permission + device GPS</div></div><button class="btn btn-blue detect" onclick="detectLocation()">📍 Detect My Location</button></div><div id="locationStatus" class="loc-status"><span>●</span><span id="locationText">Location not detected yet. Tap Detect My Location.</span><span id="accuracy" class="accuracy"></span></div><div id="coords" class="coords"></div></div></div></section>
+
+<section id="services" class="section" style="padding-top:5px"><div class="container"><div class="section-head"><div><div class="section-kicker">Built for emergencies</div><h2>One system. Faster coordination.</h2></div></div><div class="feature-grid"><div class="feature"><div class="feature-icon">🏥</div><h3>Nearby Hospital Alert</h3><p>Once confirmed, available verified hospitals receive the emergency request so the response can begin quickly.</p></div><div class="feature"><div class="feature-icon">🚑</div><h3>Ambulance Tracking</h3><p>When a driver accepts the dispatch, the emergency page can show the ambulance location and ETA.</p></div><div class="feature"><div class="feature-icon">🛡️</div><h3>Emergency-first UX</h3><p>Large actions, clear status updates and location verification reduce confusion during critical moments.</p></div></div></div></section>
+
+<section id="tracking-section" class="section" style="padding-top:10px"><div class="container"><div id="statusBox" class="emergency-panel"><div class="emergency-head"><div><div class="section-kicker">Emergency response</div><div id="statusTitle" class="emergency-title">Emergency started</div><div id="statusText" class="status-text">Processing your emergency...</div></div><span id="statusChip" class="status-chip">PENDING</span></div><div id="timerArea" class="timer-area"><div class="timer" id="timer">5</div><div style="font-size:12px;color:#7a5a5d"><b>Accidental tap?</b> Cancel before the timer reaches 0.</div><button class="btn cancel" onclick="cancelSOS()">Cancel Emergency</button></div><div id="tracking" class="tracking"></div><div id="etaBox" class="eta"></div><div id="timelineBox" class="timelineBox"></div><div id="pmap" class="map"></div></div></div></section>
+</main>
+<footer><div class="container footer"><div><div class="footer-brand">MediRescue</div><p>Smart emergency medical coordination platform.</p></div><div class="secure">✓ Designed for fast, clear emergency response • 24/7</div></div></footer>
+
+<div id="authModal" class="modal"><div class="modal-box"><div class="modal-head"><h2 id="authHeading">Patient Account</h2><button type="button" class="close" onclick="closeAuth()" aria-label="Close login window" title="Exit">×</button></div><div class="tabs"><button id="loginTab" class="tab active" onclick="showLogin()">Login</button><button id="signupTab" class="tab" onclick="showSignup()">Create Account</button></div>
+<form id="loginForm" class="form active"><div class="field"><label>Phone Number</label><input id="loginPhone" type="tel" required placeholder="Enter phone number"></div><div class="field"><label>Password</label><input id="loginPassword" type="password" required placeholder="Enter password"></div><button class="btn btn-blue submit" type="submit">Login Securely</button><div id="loginMessage" class="message"></div></form>
+<form id="signupForm" class="form"><div class="form-grid"><div class="field"><label>Full Name</label><input id="signupName" required placeholder="Full name"></div><div class="field"><label>Age</label><input id="signupAge" type="number" min="1" max="120" required placeholder="Age"></div></div><div class="field"><label>Phone Number</label><input id="signupPhone" type="tel" required placeholder="Phone number"></div><div class="form-grid"><div class="field"><label>Blood Group</label><input id="signupBlood" placeholder="O+"></div><div class="field"><label>Password</label><input id="signupPassword" type="password" minlength="4" required placeholder="Min. 4 characters"></div></div><div class="field"><label>Address</label><input id="signupAddress" placeholder="Registered address"></div><button class="btn btn-blue submit" type="submit">Create Patient Account</button><div id="signupMessage" class="message"></div></form>
+</div></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const API_BASE = window.location.origin;
+function apiFetch(path, options = {}) {
+  return fetch(API_BASE + path, { credentials: "include", ...options });
+}
+async function safeJson(response) {
+  const text = await response.text();
+  try { return text ? JSON.parse(text) : {}; }
+  catch (_) { return { success:false, error:`Server returned an invalid response (HTTP ${response.status}).` }; }
+}
+
+let emergencyId=null,timerInterval=null,countdown=5,pollingInterval=null,currentGPS=null,pmap=null,pPatient=null,pHospital=null,pAmbulance=null;
+const $=id=>document.getElementById(id);
+function openAuth(){ $('authModal').classList.add('show'); }
+function closeAuth(){ $('authModal').classList.remove('show'); }
+function showLogin(){ $('loginForm').classList.add('active');$('signupForm').classList.remove('active');$('loginTab').classList.add('active');$('signupTab').classList.remove('active');clearMessages(); }
+function showSignup(){ $('signupForm').classList.add('active');$('loginForm').classList.remove('active');$('signupTab').classList.add('active');$('loginTab').classList.remove('active');clearMessages(); }
+function clearMessages(){document.querySelectorAll('.message').forEach(e=>{e.className='message';e.textContent='';});}
+function message(id,text,ok=false){const e=$(id);e.textContent=text;e.className='message show '+(ok?'success':'error');}
+async function loadMe(){try{const r=await apiFetch('/api/me');const x=await safeJson(r);if(x.success&&x.user){$('userName').textContent='👤 '+(x.user.name||'Patient');$('userName').style.display='inline-flex';$('loginBtn').style.display='none';$('logoutBtn').style.display='inline-block';}else showLoggedOut();}catch(e){showLoggedOut();}}
+function showLoggedOut(){$('userName').style.display='none';$('loginBtn').style.display='inline-block';$('logoutBtn').style.display='none';}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();try{const r=await apiFetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:$('loginPhone').value.trim(),password:$('loginPassword').value})});const x=await safeJson(r);if(!r.ok||!x.success){message('loginMessage',x.message||x.error||'Login failed.');return;}message('loginMessage','Login successful!',true);setTimeout(()=>{closeAuth();loadMe();},500);}catch(err){message('loginMessage','Server connection failed. Make sure Flask is running.');}});
+$('signupForm').addEventListener('submit',async e=>{e.preventDefault();const d={name:$('signupName').value.trim(),age:Number($('signupAge').value),phone:$('signupPhone').value.trim(),blood_group:$('signupBlood').value.trim(),address:$('signupAddress').value.trim(),password:$('signupPassword').value};if(d.password.length<4){message('signupMessage','Password must be at least 4 characters.');return;}try{const r=await apiFetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(d)});const x=await safeJson(r);if(!r.ok||!x.success){message('signupMessage',x.message||x.error||'Account creation failed.');return;}message('signupMessage','Account created successfully!',true);setTimeout(()=>{closeAuth();loadMe();},600);}catch(err){message('signupMessage','Server connection failed. Make sure Flask is running.');}});
+async function logout(){try{await apiFetch('/api/logout',{method:'POST'});}catch(e){}showLoggedOut();}
+function gpsError(e){
+  if(!navigator.geolocation) return 'This browser does not support device location.';
+  if(e&&e.code===1) return 'Location permission is blocked. Click the 🔒 icon near the address bar → Site settings → Location → Allow, then retry.';
+  if(e&&e.code===2) return 'Device GPS is unavailable. Turn ON Windows/phone Location Services, enable Wi‑Fi/GPS, and allow Chrome to use your location.';
+  if(e&&e.code===3) return 'Location timed out. Move near a window/open area and tap Detect My Location again.';
+  return e?.message||'Could not obtain your location. Please retry.';
+}
+async function gpsPermissionState(){
+  try{
+    if(navigator.permissions){
+      const p=await navigator.permissions.query({name:'geolocation'});
+      return p.state;
+    }
+  }catch(_){}
+  return 'unknown';
+}
+function getPosition(options){
+  return new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){reject({code:0,message:'Geolocation is not supported.'});return;}
+    navigator.geolocation.getCurrentPosition(resolve,reject,options);
+  });
+}
+async function getGPS(){
+  const host=location.hostname;
+  const localHost=['localhost','127.0.0.1','::1'].includes(host);
+
+  // A real device GPS fix requires a secure context on phones/tablets.
+  if(!window.isSecureContext && !localHost){
+    throw {
+      code:0,
+      message:'GPS needs HTTPS on this device. Open MediRescue through HTTPS and allow Location permission.'
+    };
+  }
+
+  const permission=await gpsPermissionState();
+  if(permission==='denied') throw {code:1};
+
+  /*
+   * ACCURACY FIX:
+   * One getCurrentPosition() result can be a temporary Wi-Fi/cell estimate.
+   * Collect several fresh high-accuracy fixes and keep the one with the
+   * smallest reported accuracy. This prevents an old/rough fix from becoming
+   * the SOS location.
+   */
+  return await new Promise((resolve,reject)=>{
+    if(!navigator.geolocation){
+      reject({code:0,message:'Geolocation is not supported.'});
+      return;
+    }
+
+    const fixes=[];
+    let settled=false;
+    let watchId=null;
+    const started=Date.now();
+    const MAX_WAIT=9000;
+    const TARGET_ACCURACY=50;
+
+    const finish=()=>{
+      if(settled) return;
+      settled=true;
+      if(watchId!==null) navigator.geolocation.clearWatch(watchId);
+
+      if(!fixes.length){
+        reject({code:2,message:'No fresh GPS fix received. Turn ON Location/GPS and Wi-Fi, then retry.'});
+        return;
+      }
+
+      // Lowest accuracy number = best GPS fix.
+      fixes.sort((a,b)=>a.accuracy-b.accuracy);
+      const best=fixes[0];
+
+      resolve({
+        latitude:best.latitude,
+        longitude:best.longitude,
+        accuracy:best.accuracy
+      });
+    };
+
+    const onSuccess=(position)=>{
+      const lat=Number(position.coords.latitude);
+      const lon=Number(position.coords.longitude);
+      const accuracy=Number(position.coords.accuracy);
+
+      if(!Number.isFinite(lat)||!Number.isFinite(lon)) return;
+
+      fixes.push({
+        latitude:lat,
+        longitude:lon,
+        accuracy:Number.isFinite(accuracy)?Math.max(0,accuracy):9999
+      });
+
+      // Stop early once the browser reports a genuinely useful fix.
+      if(Number.isFinite(accuracy) && accuracy<=TARGET_ACCURACY){
+        finish();
+      }else if(Date.now()-started>=MAX_WAIT){
+        finish();
+      }
+    };
+
+    const onError=(e)=>{
+      // Permission denied is final. For timeout/unavailable, allow the watch
+      // to continue briefly because another fresh fix may arrive.
+      if(e && e.code===1){
+        if(watchId!==null) navigator.geolocation.clearWatch(watchId);
+        settled=true;
+        reject({code:1});
+      }else if(Date.now()-started>=MAX_WAIT){
+        finish();
+      }
+    };
+
+    watchId=navigator.geolocation.watchPosition(onSuccess,onError,{
+      enableHighAccuracy:true,
+      timeout:10000,
+      maximumAge:0
+    });
+
+    setTimeout(finish,MAX_WAIT+500);
+  });
+}
+function setLocationUI(p){
+  currentGPS=p;
+  $('locationStatus').className='loc-status good';
+  $('locationText').textContent='Location detected successfully';
+  $('accuracy').textContent='± '+Math.round(p.accuracy)+' m';
+  $('coords').textContent='Latitude: '+p.latitude.toFixed(6)+'   Longitude: '+p.longitude.toFixed(6);
+  showUserMap(p.latitude,p.longitude);
+}
+async function detectLocation(){
+  const buttons=document.querySelectorAll('.detect');
+  buttons.forEach(b=>{b.classList.add('loading');b.textContent='⌖ Locating…';});
+  $('locationStatus').className='loc-status';
+  $('locationText').textContent='Requesting device GPS permission…';
+  $('accuracy').textContent='';$('coords').textContent='';
+  try{
+    const p=await getGPS();
+    setLocationUI(p);
+  }catch(e){
+    currentGPS=null;
+    $('locationStatus').className='loc-status bad';
+    $('locationText').textContent=gpsError(e);
+    $('accuracy').textContent='';
+  }finally{
+    buttons.forEach(b=>{b.classList.remove('loading');b.textContent='📍 Detect My Location';});
+  }
+}
+function initMap(){if(!window.L)return;if(!pmap){const center=currentGPS?[Number(currentGPS.latitude),Number(currentGPS.longitude)]:[20.5937,78.9629];const zoom=currentGPS?15:5;pmap=L.map('pmap').setView(center,zoom);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(pmap);}}
+function showUserMap(lat,lon){initMap();if(!pmap)return;if(pPatient)pPatient.setLatLng([lat,lon]);else pPatient=L.marker([lat,lon]).addTo(pmap).bindPopup('📍 Your current location');pmap.setView([lat,lon],15);setTimeout(()=>pmap.invalidateSize(),100);}
+async function startSOS(){prepareFreshEmergencyView();
+  if (emergencyId) {
+    const activeStatus = $('statusChip')?.textContent || '';
+    if (!['CANCELLED','FAILED','ERROR'].includes(activeStatus)) {
+      $('statusText').textContent='An emergency is already active. Please wait for it to finish or cancel it.';
+      return;
+    }
+  }
+  emergencyId=null;
+  clearInterval(timerInterval);
+  const btn=$('sos');const old=btn.innerHTML;btn.disabled=true;btn.innerHTML='⌖ <span>LOCATING…</span>';
+  $('statusBox').classList.add('show');$('statusTitle').textContent='📍 Getting your location…';$('statusText').textContent='No form required. We are capturing your location. You will have 5 seconds to cancel if this was accidental.';$('statusChip').textContent='LOCATING';$('timerArea').style.display='none';
+  try{
+    // If the user has already verified a GPS fix with “Detect My Location”,
+    // reuse that exact fix for SOS. This prevents a second browser lookup
+    // from returning a different network/cached location.
+    const p=currentGPS || await getGPS();
+    setLocationUI(p);
+    const r=await apiFetch('/api/sos/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)});
+    const x=await safeJson(r);
+    if(!r.ok||!x.success){$('statusTitle').textContent='❌ SOS failed';$('statusText').textContent=x.message||x.error||'Could not start emergency.';$('statusChip').textContent='FAILED';return;}
+    emergencyId=x.emergency_id;
+    // Create the emergency record first, but DO NOT alert hospitals yet.
+    // The 5-second grace period protects against accidental SOS taps.
+    $('statusTitle').textContent='⚠️ Emergency detected';
+    $('statusText').textContent='Accidental tap? Cancel within 5 seconds. If you do nothing, the emergency alert will be sent automatically.';
+    $('tracking').innerHTML='<div class="track-item"><b>📍 Emergency Location</b>'+Number(p.latitude).toFixed(6)+', '+Number(p.longitude).toFixed(6)+'<small style="display:block;margin-top:4px;color:#66758a">Accuracy ±'+Math.round(p.accuracy||0)+' m</small></div>';
+    $('statusChip').textContent='CANCEL WINDOW';
+    $('timerArea').style.display='block';
+    countdown=5;
+    $('timer').textContent=countdown;
+    clearInterval(timerInterval);
+    timerInterval=setInterval(()=>{
+      countdown--;
+      $('timer').textContent=Math.max(countdown,0);
+      if(countdown<=0){
+        clearInterval(timerInterval);
+        confirmSOS();
+      }
+    },1000);
+  }catch(e){$('statusTitle').textContent='❌ Location unavailable';$('statusText').textContent=gpsError(e);$('statusChip').textContent='GPS ERROR';$('locationStatus').className='loc-status bad';$('locationText').textContent=gpsError(e);}
+  finally{btn.disabled=false;btn.innerHTML=old;}
+}
+async function cancelSOS(){clearInterval(timerInterval);if(!emergencyId){$('statusBox').classList.remove('show');return;}try{await apiFetch('/api/sos/cancel',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emergency_id:emergencyId})});}catch(e){}$('timerArea').style.display='none';emergencyId=null;$('statusTitle').textContent='✅ Emergency Cancelled';$('statusText').textContent='Your emergency request has been cancelled.';$('statusChip').textContent='CANCELLED';}
+async function confirmSOS(){if(!emergencyId)return;$('timerArea').style.display='none';$('statusTitle').textContent='📡 Broadcasting Emergency…';$('statusText').textContent='Finding nearby verified hospitals.';$('statusChip').textContent='BROADCASTING';try{const r=await apiFetch('/api/sos/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({emergency_id:emergencyId})});const x=await safeJson(r);if(!r.ok||!x.success){$('statusTitle').textContent='❌ Emergency failed';$('statusText').textContent=x.message||x.error||'Could not broadcast emergency.';$('statusChip').textContent='FAILED';return;}$('statusTitle').textContent='🚑 Emergency Active';$('statusText').textContent='Nearby hospitals have been notified. Waiting for the first hospital to accept.';$('statusChip').textContent='ACTIVE';startEmergencyPolling();}catch(e){$('statusTitle').textContent='❌ Connection Error';$('statusText').textContent='Could not connect to the server.';$('statusChip').textContent='ERROR';}}
+function startEmergencyPolling(){clearInterval(pollingInterval);pollingInterval=setInterval(loadEmergencyStatus,3000);loadEmergencyStatus();}
+function statusLabel(s){return String(s||'').replaceAll('_',' ')}
+function clearPatientEmergencyView(){
+  clearInterval(pollingInterval);
+  if ($('tracking')) $('tracking').innerHTML='';
+  if ($('etaBox')) { $('etaBox').innerHTML=''; $('etaBox').classList.remove('show'); }
+  if ($('timelineBox')) { $('timelineBox').innerHTML=''; }
+  if (pPatient) { pmap && pmap.removeLayer(pPatient); pPatient=null; }
+  if (pHospital) { pmap && pmap.removeLayer(pHospital); pHospital=null; }
+  if (pAmbulance) { pmap && pmap.removeLayer(pAmbulance); pAmbulance=null; }
+  if (pmap) { pmap.remove(); pmap=null; }
+  if ($('pmap')) { $('pmap').style.display='none'; }
+}
+
+function prepareFreshEmergencyView(){
+  if ($('tracking')) $('tracking').innerHTML='';
+  if ($('etaBox')) { $('etaBox').innerHTML=''; $('etaBox').classList.remove('show'); }
+  if ($('timelineBox')) $('timelineBox').innerHTML='';
+  if ($('pmap')) $('pmap').style.display='block';
+  pPatient=pHospital=pAmbulance=null;
+}
+
+async function loadEmergencyStatus(){if(!emergencyId)return;try{const r=await apiFetch('/api/emergency/'+emergencyId);const x=await safeJson(r);if(!r.ok||!x.success)return;const e=x.emergency||{};const status=String(e.status||'').toUpperCase();let title='🚑 Emergency Active',text='Your emergency is being coordinated.',chip=statusLabel(status);if(status==='HOSPITAL_BROADCAST'){title='🏥 Hospitals Notified';text='Waiting for a verified hospital to accept your emergency.'}else if(status==='HOSPITAL_ACCEPTED'){title='🏥 Hospital Accepted';text='Hospital accepted your emergency. Ambulance is being assigned.'}else if(status==='DRIVER_ACCEPTED'||status==='DISPATCHED'){title='🚑 Ambulance Dispatched';text='Driver accepted the emergency and ambulance is on the way.'}else if(status==='PICKED_UP'){title='🚑 Ambulance With Patient';text='Patient is being taken to the hospital.'}else if(status==='COMPLETED'){title='🏥 Patient Reached At Hospital';text='Emergency completed. Live location tracking has stopped.'}else if(status==='CANCELLED'||status==='CANCELED'){clearInterval(pollingInterval);title='Emergency Cancelled';text='This emergency request has been cancelled.'}else if(status==='NO_HOSPITAL'){clearInterval(pollingInterval);title='⚠️ No Hospital Available';text='No available verified hospital was found.'}$('statusTitle').textContent=title;$('statusText').textContent=text;$('statusChip').textContent=chip;
+if(status==='COMPLETED'){
+  if($('tracking')) $('tracking').innerHTML='<div class="track-item"><b>🏥 Status</b> PATIENT REACHED AT HOSPITAL</div>';
+  clearPatientEmergencyView();
+  if($('tracking')) $('tracking').innerHTML='<div class="track-item"><b>🏥 Status</b> PATIENT REACHED AT HOSPITAL</div>';
+  stopPatientLiveGPS();
+  emergencyId=null;
+  return;
+}
+let html='';html+='<div class="track-item"><b>Status</b>'+statusLabel(status)+'</div>';if(e.latitude&&e.longitude)html+='<div class="track-item"><b>📍 Emergency Location</b>'+Number(e.latitude).toFixed(6)+', '+Number(e.longitude).toFixed(6)+(e.accuracy?' <small style="display:block;margin-top:4px;color:#66758a">Accuracy ±'+Math.round(e.accuracy)+' m</small>':'')+'</div>';if(e.hospital_name)html+='<div class="track-item"><b>🏥 Hospital</b>'+e.hospital_name+'</div>';if(e.driver_name)html+='<div class="track-item"><b>🚑 Ambulance</b>'+e.driver_name+(e.ambulance_number?' • '+e.ambulance_number:'')+'</div>';if(e.ambulance_latitude)html+='<div class="track-item"><b>📍 Ambulance GPS</b>'+Number(e.ambulance_latitude).toFixed(5)+', '+Number(e.ambulance_longitude).toFixed(5)+'</div>';$('tracking').innerHTML=html;updateEmergencyMap(e);try{const er=await apiFetch('/api/emergency/'+emergencyId+'/eta');const ex=await safeJson(er);if(ex.to_patient){$('etaBox').classList.add('show');$('etaBox').innerHTML='<b>🚑 Ambulance ETA</b> · '+ex.to_patient.distance_km+' km away · approximately '+ex.to_patient.eta_minutes+' min';}}catch(_){}}catch(e){console.error('Emergency polling',e)}}
+function updateEmergencyMap(e){initMap();if(!pmap)return;const pts=[];if(e.latitude&&e.longitude){pts.push([Number(e.latitude),Number(e.longitude)]);if(pPatient)pPatient.setLatLng(pts[0]);else pPatient=L.marker(pts[0]).addTo(pmap).bindPopup('📍 Your SOS location');}if(e.hospital_latitude&&e.hospital_longitude){const h=[Number(e.hospital_latitude),Number(e.hospital_longitude)];pts.push(h);if(pHospital)pHospital.setLatLng(h);else pHospital=L.marker(h).addTo(pmap).bindPopup('🏥 Hospital');}if(e.ambulance_latitude&&e.ambulance_longitude){const a=[Number(e.ambulance_latitude),Number(e.ambulance_longitude)];pts.push(a);if(pAmbulance)pAmbulance.setLatLng(a);else pAmbulance=L.marker(a).addTo(pmap).bindPopup('🚑 Ambulance');}if(pts.length>1)pmap.fitBounds(pts,{padding:[35,35]});else if(pts.length===1)pmap.setView(pts[0],14);setTimeout(()=>pmap.invalidateSize(),100);}
+$('authModal').addEventListener('click',e=>{if(e.target===$('authModal'))closeAuth();});window.addEventListener('load',()=>{loadMe();});
+</script>
+
+<script>
+/* ================================
+   PATIENT UI LANGUAGE TOGGLE
+   English <-> Hindi.  Emergency functionality is unchanged.
+================================ */
+(function(){
+  const translations = {
+    '✦ Real-time emergency coordination':'✦ रीयल-टाइम आपातकालीन समन्वय',
+    '✓ Verified hospital network':'✓ सत्यापित अस्पताल नेटवर्क',
+    'Available 24 / 7':'24 / 7 उपलब्ध',
+    'Home':'होम', 'Services':'सेवाएँ', 'My Location':'मेरी लोकेशन', 'Emergency Tracking':'आपातकालीन ट्रैकिंग',
+    'Login / Sign up':'लॉगिन / साइन अप', 'Logout':'लॉगआउट',
+    'Smart emergency response':'स्मार्ट आपातकालीन सहायता',
+    'Medical help.':'चिकित्सीय सहायता।',
+    'When every second matters.':'जब हर सेकंड महत्वपूर्ण हो।',
+    'MediRescue connects you with nearby verified hospitals and ambulance drivers using your live GPS location — helping emergency response start faster.':'MediRescue आपकी लाइव GPS लोकेशन का उपयोग करके आपको पास के सत्यापित अस्पतालों और एम्बुलेंस ड्राइवरों से जोड़ता है — ताकि आपातकालीन सहायता जल्दी शुरू हो सके।',
+    '🚨 SEND SOS':'🚨 SOS भेजें',
+    '📍 Detect My Location':'📍 मेरी लोकेशन पता करें',
+    'One-tap emergency response.':'एक टैप में आपातकालीन सहायता।',
+    'No form. No account required. Your GPS location is captured automatically.':'कोई फॉर्म नहीं। अकाउंट जरूरी नहीं। आपकी GPS लोकेशन अपने आप ली जाती है।',
+    '👥 Bystander Mode:':'👥 बायस्टैंडर मोड:',
+    'If someone else needs help, you can send SOS from this screen on their behalf.':'अगर किसी और को मदद चाहिए, तो आप उनकी ओर से इसी स्क्रीन से SOS भेज सकते हैं।',
+    'Emergency network online':'आपातकालीन नेटवर्क ऑनलाइन है',
+    'Verified response partners':'सत्यापित सहायता साझेदार',
+    'Live GPS enabled':'लाइव GPS चालू है',
+    'Location-based dispatch':'लोकेशन के आधार पर डिस्पैच',
+    'Verified Hospitals':'सत्यापित अस्पताल',
+    'Emergency requests are broadcast to eligible nearby hospitals.':'आपातकालीन अनुरोध पास के योग्य अस्पतालों को भेजे जाते हैं।',
+    'Ambulance Dispatch':'एम्बुलेंस डिस्पैच',
+    'Accepted emergencies can be assigned to an ambulance driver.':'स्वीकृत आपातकालीन अनुरोध को एम्बुलेंस ड्राइवर को सौंपा जा सकता है।',
+    'Live Location':'लाइव लोकेशन',
+    'Use accurate GPS coordinates for faster emergency coordination.':'तेज़ आपातकालीन समन्वय के लिए सटीक GPS निर्देशांक का उपयोग करें।',
+    'Location intelligence':'लोकेशन इंटेलिजेंस',
+    'Your current location':'आपकी वर्तमान लोकेशन',
+    'Detect and verify GPS before sending an emergency request.':'आपातकालीन अनुरोध भेजने से पहले GPS लोकेशन पता करें और सत्यापित करें।',
+    '📍 GPS readiness':'📍 GPS तैयार है',
+    'Browser location permission + device GPS':'ब्राउज़र लोकेशन अनुमति + डिवाइस GPS',
+    'Location not detected yet. Tap Detect My Location.':'अभी लोकेशन नहीं मिली। “मेरी लोकेशन पता करें” दबाएँ।',
+    'Built for emergencies':'आपातकाल के लिए बनाया गया',
+    'One system. Faster coordination.':'एक सिस्टम। तेज़ समन्वय।',
+    'Nearby Hospital Alert':'पास के अस्पताल को अलर्ट',
+    'Once confirmed, available verified hospitals receive the emergency request so the response can begin quickly.':'पुष्टि के बाद उपलब्ध सत्यापित अस्पतालों को आपातकालीन अनुरोध मिलता है, ताकि सहायता जल्दी शुरू हो सके।',
+    'Ambulance Tracking':'एम्बुलेंस ट्रैकिंग',
+    'When a driver accepts the dispatch, the emergency page can show the ambulance location and ETA.':'ड्राइवर डिस्पैच स्वीकार करने के बाद आपातकालीन पेज एम्बुलेंस की लोकेशन और ETA दिखा सकता है।',
+    'Emergency-first UX':'आपातकालीन-केंद्रित UX',
+    'Large actions, clear status updates and location verification reduce confusion during critical moments.':'बड़े बटन, स्पष्ट स्टेटस अपडेट और लोकेशन सत्यापन महत्वपूर्ण समय में भ्रम कम करते हैं।',
+    'Emergency response':'आपातकालीन सहायता',
+    'Emergency started':'आपातकाल शुरू हुआ',
+    'Processing your emergency...':'आपातकालीन अनुरोध प्रोसेस हो रहा है...',
+    'PENDING':'प्रतीक्षा में',
+    'Accidental tap?':'गलती से दब गया?',
+    'Cancel before the timer reaches 0.':'टाइमर 0 होने से पहले रद्द करें।',
+    'Cancel Emergency':'आपातकाल रद्द करें',
+    'Patient Account':'मरीज़ अकाउंट',
+    'Login':'लॉगिन',
+    'Create Account':'अकाउंट बनाएँ',
+    'Phone Number':'फ़ोन नंबर',
+    'Password':'पासवर्ड',
+    'Enter phone number':'फ़ोन नंबर दर्ज करें',
+    'Enter password':'पासवर्ड दर्ज करें',
+    'Login Securely':'सुरक्षित लॉगिन',
+    'Full Name':'पूरा नाम', 'Age':'उम्र', 'Blood Group':'ब्लड ग्रुप', 'Address':'पता',
+    'Create Patient Account':'मरीज़ अकाउंट बनाएँ',
+    'Smart emergency medical coordination platform.':'स्मार्ट आपातकालीन चिकित्सा समन्वय प्लेटफ़ॉर्म।',
+    '✓ Designed for fast, clear emergency response • 24/7':'✓ तेज़ और स्पष्ट आपातकालीन सहायता के लिए • 24/7'
+  };
+
+  const placeholders = {
+    'Enter phone number':'फ़ोन नंबर दर्ज करें',
+    'Enter password':'पासवर्ड दर्ज करें',
+    'Full name':'पूरा नाम',
+    'Age':'उम्र',
+    'Phone number':'फ़ोन नंबर',
+    'O+':'O+',
+    'Min. 4 characters':'कम से कम 4 अक्षर',
+    'Registered address':'रजिस्टर्ड पता'
+  };
+
+  let lang = localStorage.getItem('medirescue_patient_lang') || 'en';
+  const original = new Map();
+
+  function rememberTextNodes(){
+    document.querySelectorAll('body *').forEach(el=>{
+      if(el.children.length===0){
+        const t=el.textContent.trim();
+        if(t && !original.has(el)) original.set(el,t);
+      }
+    });
+  }
+
+  function applyLanguage(){
+    rememberTextNodes();
+    original.forEach((text,el)=>{
+      if(!el.isConnected) return;
+      el.textContent = lang==='hi' && translations[text] ? translations[text] : text;
+    });
+    document.querySelectorAll('input[placeholder]').forEach(input=>{
+      if(!input.dataset.enPlaceholder) input.dataset.enPlaceholder=input.placeholder;
+      const en=input.dataset.enPlaceholder;
+      input.placeholder = lang==='hi' && placeholders[en] ? placeholders[en] : en;
+    });
+    const btn=document.getElementById('langToggle');
+    if(btn) btn.textContent=lang==='hi'?'English':'हिन्दी';
+    document.documentElement.lang=lang==='hi'?'hi':'en';
+  }
+
+  window.toggleLanguage=function(){
+    lang=lang==='en'?'hi':'en';
+    localStorage.setItem('medirescue_patient_lang',lang);
+    applyLanguage();
+  };
+  window.addEventListener('load',()=>setTimeout(applyLanguage,50));
+})();
+</script>
+
+</body></html>

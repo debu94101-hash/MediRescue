@@ -1,0 +1,161 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MediRescue Admin</title><link rel="stylesheet" href="/static/style.css"></head><body><header style="display:flex;justify-content:space-between;align-items:center"><b>⚙️ MediRescue Admin</b><button onclick="logout()">Logout</button></header><main class="dashboard"><div id="adminLoginBox" class="card"><h2>Admin Login</h2><form id="adminLoginForm"><input id="adminUser" placeholder="Username" autocomplete="off" required><input id="adminPass" type="password" placeholder="Password" autocomplete="new-password" required><button type="submit">Login</button></form><p id="loginMessage"></p></div><div id="adminPanel" class="hidden"><div id="overview" class="stats"></div><h2>Pending Verification</h2><div class="grid2"><div class="card"><h2>🏥 Hospitals</h2><div id="hospitals"></div></div><div class="card"><h2>🚑 Drivers</h2><div id="drivers"></div></div></div><h2>Add verified record manually</h2><div class="grid2"><div class="card"><h2>Hospital</h2><input id="hn" placeholder="Hospital name"><input id="hp" placeholder="Phone"><input id="ha" placeholder="Address"><div class="two"><input id="hlat" placeholder="Latitude"><input id="hlon" placeholder="Longitude"></div><input id="hu" placeholder="Username"><input id="hpass" placeholder="Password"><input id="hcap" placeholder="Capacity" type="number"><button onclick="addH()">Add Verified Hospital</button></div><div class="card"><h2>Driver</h2><input id="dn" placeholder="Driver name"><input id="dp" placeholder="Phone"><input id="dl" placeholder="License"><input id="da" placeholder="Ambulance number"><input id="dh" placeholder="Hospital ID" type="number"><input id="du" placeholder="Username"><input id="dpass" placeholder="Password"><button onclick="addD()">Add Verified Driver</button></div></div></div></main><script>
+const $ = (id) => document.getElementById(id);
+
+$("adminLoginForm").addEventListener("submit", adminLogin);
+
+async function adminLogin(event) {
+  event.preventDefault();
+  const message = $("loginMessage");
+  message.textContent = "Logging in...";
+
+  try {
+    const response = await fetch("http://127.0.0.1:5000/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({
+        username: $("adminUser").value.trim(),
+        password: $("adminPass").value
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      message.textContent = data.message || "Login failed";
+      return;
+    }
+
+    $("adminLoginBox").classList.add("hidden");
+    $("adminPanel").classList.remove("hidden");
+    message.textContent = "Login successful";
+    await load();
+  } catch (error) {
+    console.error("Login error:", error);
+    message.textContent = "Server connection error";
+  }
+}
+
+async function api(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: {
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
+    }
+  });
+
+  let data = {};
+  try { data = await response.json(); } catch (_) {}
+
+  if (response.status === 401) {
+    $("adminLoginBox").classList.remove("hidden");
+    $("adminPanel").classList.add("hidden");
+    throw new Error("Admin login required");
+  }
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || "Request failed");
+  }
+
+  return data;
+}
+
+async function load() {
+  try {
+    const overviewData = await api("/api/admin/overview");
+    $("overview").innerHTML = Object.entries(overviewData)
+      .map(([key, value]) => `<div><b>${value}</b><span>${key.replaceAll("_", " ")}</span></div>`)
+      .join("");
+
+    const pendingData = await api("/api/admin/pending");
+    const hospitalsList = pendingData.hospitals || [];
+    const driversList = pendingData.drivers || [];
+
+    $("hospitals").innerHTML = hospitalsList.length
+      ? hospitalsList.map(item => `<div class="request"><b>${item.name}</b><br>${item.phone}<br><button onclick="verify('hospital',${item.id},true)">VERIFY</button> <button class="dark" onclick="verify('hospital',${item.id},false)">REJECT</button></div>`).join("")
+      : "None";
+
+    $("drivers").innerHTML = driversList.length
+      ? driversList.map(item => `<div class="request"><b>${item.name}</b> • ${item.ambulance_number}<br>Hospital ID: ${item.hospital_id}<br><button onclick="verify('driver',${item.id},true)">VERIFY</button> <button class="dark" onclick="verify('driver',${item.id},false)">REJECT</button></div>`).join("")
+      : "None";
+  } catch (error) {
+    console.error("Load error:", error);
+    if (error.message !== "Admin login required") alert(error.message);
+  }
+}
+
+async function verify(kind, id, approved) {
+  try {
+    const data = await api("/api/admin/verify", {
+      method: "POST",
+      body: JSON.stringify({ kind, id, approved })
+    });
+    alert(data.message || "Done");
+    await load();
+  } catch (error) { alert(error.message); }
+}
+
+async function addH() {
+  try {
+    const data = await api("/api/admin/hospital", {
+      method: "POST",
+      body: JSON.stringify({
+        name: $("hn").value,
+        phone: $("hp").value,
+        address: $("ha").value,
+        latitude: Number($("hlat").value),
+        longitude: Number($("hlon").value),
+        username: $("hu").value,
+        password: $("hpass").value,
+        capacity: Number($("hcap").value || 20)
+      })
+    });
+    alert(data.message || "Hospital added");
+    await load();
+  } catch (error) { alert(error.message); }
+}
+
+async function addD() {
+  try {
+    const data = await api("/api/admin/driver", {
+      method: "POST",
+      body: JSON.stringify({
+        name: $("dn").value,
+        phone: $("dp").value,
+        license_number: $("dl").value,
+        ambulance_number: $("da").value,
+        hospital_id: Number($("dh").value),
+        username: $("du").value,
+        password: $("dpass").value
+      })
+    });
+    alert(data.message || "Driver added");
+    await load();
+  } catch (error) { alert(error.message); }
+}
+
+async function logout() {
+  fetch("https://8i4jzpsjl0.execute-api.ap-south-1.amazonaws.com/api/logout", {
+    method: "POST",
+    credentials: "include"
+  }).finally(() => {
+    document.getElementById("adminUsername").value = "";
+    document.getElementById("adminPassword").value = "";
+
+    document.getElementById("adminLoginBox").style.display = "block";
+    document.getElementById("adminPanel").style.display = "none";
+  });
+}
+
+(async function init() {
+  try {
+    const data = await api("/api/admin/me");
+    if (data.logged_in) {
+      $("adminLoginBox").classList.add("hidden");
+      $("adminPanel").classList.remove("hidden");
+      await load();
+    }
+  } catch (_) {}
+})();
+</script></body></html>

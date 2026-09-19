@@ -1,0 +1,1 @@
+{"version":"2.0","routeKey":"POST /emergencies","rawPath":"/emergencies","requestContext":{"http":{"method":"POST"}},"body":"{\"emergency_id\":\"demo-001\",\"status\":\"HOSPITAL_BROADCAST\",\"latitude\":28.61,\"longitude\":77.23,\"accuracy\":12,\"priority\":\"HIGH\"}"}

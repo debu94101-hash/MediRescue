@@ -1,0 +1,109 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: MediRescue AWS foundation - API Gateway + Lambda + DynamoDB + SNS
+
+Globals:
+  Function:
+    Runtime: python3.13
+  Globals:
+  Function:
+    Runtime: python3.13
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref EmergencyTable
+        TOPIC_ARN: !GetAtt EmergencyTopic.TopicArn
+
+  Api:
+    Cors:
+      AllowMethods: "'GET,POST,PUT,PATCH,DELETE,OPTIONS'"
+      AllowHeaders: "'Content-Type,Authorization'"
+      AllowOrigin: "'http://127.0.0.1:5500'"
+    Timeout: 10
+    MemorySize: 256
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref EmergencyTable
+        TOPIC_ARN: !GetAtt EmergencyTopic.TopicArn
+
+Resources:
+    MediRescueHttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowOrigins:
+          - http://127.0.0.1:5500
+          - http://localhost:5500
+        AllowHeaders:
+          - Content-Type
+          - Authorization
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - PATCH
+          - DELETE
+          - OPTIONS
+  EmergencyTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: MediRescueEmergencies
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: emergency_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: emergency_id
+          KeyType: HASH
+      PointInTimeRecoverySpecification:
+        PointInTimeRecoveryEnabled: true
+
+  EmergencyTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: MediRescueEmergencyAlerts
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: MediRescueApiFoundation
+
+      CodeUri: lambda/
+      Handler: app.lambda_handler
+
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref EmergencyTable
+          TOPIC_ARN: !GetAtt EmergencyTopic.TopicArn
+
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref EmergencyTable
+
+        - SNSPublishMessagePolicy:
+            TopicName: !GetAtt EmergencyTopic.TopicName
+
+      Events:
+        Health:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MediRescueHttpApi
+            Path: /health
+            Method: GET
+
+        EmergencyMirror:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref MediRescueHttpApi
+            Path: /emergencies
+            Method: POST
+Outputs:
+  ApiUrl:
+    Description: HTTP API endpoint
+    Value: !Sub 'https://${MediRescueHttpApi}.execute-api.${AWS::Region}.amazonaws.com'
+  DynamoDBTable:
+    Description: Emergency table name
+    Value: !Ref EmergencyTable
+  SNSTopicArn:
+    Description: Emergency SNS topic ARN
+    Value: !Ref EmergencyTopic
