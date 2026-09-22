@@ -547,7 +547,7 @@ Patient flow:
 
 ---
 
-# 🏆 Hackathon Demo Flow
+# 🏆 Demo Flow
 
 ### 1. Patient
 
@@ -608,40 +608,6 @@ https://YOUR-CLOUDFLARE-URL/admin
 ```
 
 Demonstrate verification and operational management.
-
----
-
-# 📦 Clean Hackathon Submission
-
-Create the submission ZIP from the project directory:
-
-```bash
-cd /home/ubuntu/MediRescue/MediRescue
-
-zip -r /home/ubuntu/MediRescue-Hackathon-Submission.zip . \
-  -x "venv/*" \
-     "__pycache__/*" \
-     "*/__pycache__/*" \
-     "*.pyc" \
-     "*.db" \
-     ".env" \
-     "*.pem" \
-     "*.backup*" \
-     "*.before-*"
-```
-
-Verify:
-
-```bash
-unzip -l /home/ubuntu/MediRescue-Hackathon-Submission.zip
-```
-
-Check for sensitive files:
-
-```bash
-unzip -l /home/ubuntu/MediRescue-Hackathon-Submission.zip \
-  | grep -E "backup|before-|\.db|\.pem|\.env$"
-```
 
 ---
 
